@@ -25,6 +25,11 @@ Aplicación móvil desarrollada para Android nativo, destinada al catálogo, res
 ## Diseño de Interfaces
 https://www.figma.com/design/bfr0bz60Urwr7jGegwTNCq/App-Barberia---Lab-VI?m=auto&t=sL4Oo45kmMGKNT5v-6
 
+## Apps vistas para el proyecto
+* Fresha
+* Barberky
+* MiBarberia
+
 ## Desarrolladores
 * Gómez Ramiro
 * Benitez Leonel
