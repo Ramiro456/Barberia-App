@@ -2,10 +2,15 @@ package com.example.barberia_app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val backgroundDark = Color(0xFF121212)
+val surfaseCard = Color(0xFF1A1A1A)
+val surfaceCardElevated = Color(0xFF1E1E1E)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val goldPrimary = Color(0xFFE5A93C)
+
+val borderSubtle = Color(0xFF2B2B2B)
+val dividerLine = Color(0xFF262626)
+
+val textWhite = Color(0xFFFFFFFF)
+val textMuted = Color(0xFFA0A0A0)
+val textDark = Color(0xFF121212)
