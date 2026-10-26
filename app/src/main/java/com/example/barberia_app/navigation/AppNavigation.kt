@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.barberia_app.screen.LoginScreen
 import com.example.barberia_app.screen.RegisterScreen
+import com.example.barberia_app.screen.Home_Catalogo
+
 
 sealed class Screen(val route: String){
     object Login: Screen("login") //cada pantalla es un objeto unico que hereda de screen
@@ -51,8 +53,18 @@ fun AppNavigation(){
             )
         }
 
-        /*composable(route = Screen.Home.route){
-            //falta el home de la barberia aca
-        }*/
+        composable(route = Screen.Home.route) {
+            Home_Catalogo(
+                onNavigateToTurnos = {
+                   // navController.navigate(Screen.Turnos.route)
+                },
+                onNavigateToUbicacion = {
+                   // navController.navigate(Screen.Ubicacion.route)
+                },
+                onNavigateToPerfil = {
+                   // navController.navigate(Screen.Perfil.route)
+                }
+            )
+        }
     }
 }
