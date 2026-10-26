@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -43,17 +45,23 @@ import com.example.barberia_app.ui.theme.textWhite
 import androidx.compose.runtime.setValue
 import com.example.barberia_app.components.BarberButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.barberia_app.R
+import com.example.barberia_app.viewmodels.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onLoginSucess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    viewModel: LoginViewModel = viewModel() //instacia del ViewModel
 ){
     //Variables para guardar lo que el usuario escribe
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    //eliminados porque la pantalla ya no almacenará datos
+    //var email by remember { mutableStateOf("") }
+    //var password by remember { mutableStateOf("") }
     //by: Permite leer y escribir directamente en la variable
     //remember: compose va a recordar este dato cuando la pantalla se redibuje, evitando que el valor vuelva a 0
     //mutableStateOf: crea un valor observable, cada vez que su contenido cambia, Compose actualiza automáticamente los textos en pantalla
@@ -106,8 +114,8 @@ fun LoginScreen(
 
             //Campo de Email
             OutlinedTextField(
-                value = email, //muestra lo que tiene guardado la variable estado
-                onValueChange = { email = it }, // it contiene el nuevo texto que escribe el usuario y se lo asigan a email
+                value = viewModel.email, //lee el valor del viewModel
+                onValueChange = { viewModel.onEmailChange(it) }, // it contiene el nuevo texto que escribe el usuario y se lo asigna a email del viewModel
                 label = { Text("Correo electrónico") },
                 placeholder = { Text("ejemplo@correo.com") },
                 leadingIcon = {
@@ -138,8 +146,8 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = viewModel.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
                 label = { Text("Contraseña") },
                 placeholder = { Text("••••••••••••••••") },
                 leadingIcon = {
@@ -149,8 +157,17 @@ fun LoginScreen(
                         tint = textMuted
                     )
                 },
+                trailingIcon = {//agrega un componente al final, a la derecha, dentro del campo de texto
+                    //evalua la variable del viewModel, si es true muestra el ojo abierto, sino el ojo cerrado
+                    val icon = if (viewModel.isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    //al tocar el icono, le avisa al ViewModel que invierta el estado.
+                    IconButton(onClick =  { viewModel.togglePasswordVisible() }) {
+                        Icon(imageVector = icon, contentDescription = "Alternar Visibilidad", tint = textMuted)
+                    }
+                },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(), //reemplaza las letras por ••••••••
+                //si es visible muestra el texto tal cual, sino se lo reemplaza por puntitos
+                visualTransformation = if (viewModel.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(), //reemplaza las letras por ••••••••
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -187,8 +204,8 @@ fun LoginScreen(
 
             BarberButton(
                 text = "Iniciar Sesión",
-                onClick = onLoginClick,
-                enabled = email.isNotBlank() && password.isNotBlank() //el boton estara activo solo si los campos no estan vacios
+                onClick = {viewModel.login(onSucces = onLoginSucess) },
+                enabled = viewModel.email.isNotBlank() && viewModel.password.isNotBlank() //el boton estara activo solo si los campos no estan vacios
             )
 
             Spacer(modifier = Modifier.height(24.dp))

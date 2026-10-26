@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.barberia_app.navigation.AppNavigation
 import com.example.barberia_app.screen.LoginScreen
 import com.example.barberia_app.ui.theme.BarberiaAppTheme
 
@@ -20,10 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BarberiaAppTheme {
-                LoginScreen(
-                    onLoginClick = {},
-                    onRegisterClick = {}
-                )
+                AppNavigation()
             }
         }
     }

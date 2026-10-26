@@ -53,4 +53,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     //iconos de Material
     implementation("androidx.compose.material:material-icons-extended")
+    //para usar el ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    //para la navegacion entre pantallas
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 }
