@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.example.barberia_app.components.home.Categorias
 import com.example.barberia_app.components.home.PromoBanner
@@ -47,6 +48,7 @@ import com.example.barberia_app.ui.theme.goldPrimary
 import com.example.barberia_app.ui.theme.surfaseCard
 import com.example.barberia_app.ui.theme.textMuted
 import com.example.barberia_app.ui.theme.textWhite
+import com.example.barberia_app.viewmodels.HomeViewModel
 
 data class ServicioModel(
     val id: String,
@@ -59,38 +61,12 @@ data class ServicioModel(
 @Composable
 fun Home_Catalogo(
     //Aca deberia cargar el nombre del usuario
-    nombreUsuario: String = "",
+    nombreUsuario: String = "Aldo",
+    viewModel: HomeViewModel = viewModel(),
     onNotificationClick: () -> Unit = {},
-    onNavigateToTurnos: () -> Unit = {},
-    onNavigateToUbicacion: () -> Unit = {},
-    onNavigateToPerfil: () -> Unit = {}
+    onNavigateToTurnos: () -> Unit = {}
 ) {
-    var categoriaSeleccionada by remember { mutableStateOf("Todos") }
-
-  //Aca hardcodeamos pero deberia recibir data de la base de datos
-    var serviciosSeleccionadosIds by remember { mutableStateOf(setOf<String>()) }
-
-    val listaServicios = listOf(
-        ServicioModel("1", "Corte Fade / Degradé", "45 min • Tijera y máquina", "$10.000", "Cortes"),
-        ServicioModel("2", "Corte Tradicional", "35 min • Solo tijera o máquina", "$7.500", "Cortes"),
-        ServicioModel("3", "Perfilado de Barba", "30 min • Navaja", "$5.000", "Barba")
-    )
-
-    val serviciosFiltrados = if (categoriaSeleccionada == "Todos") {
-        listaServicios
-    } else {
-        listaServicios.filter { it.categoria == categoriaSeleccionada }
-    }
-
-    val serviciosSeleccionados = listaServicios.filter {
-        serviciosSeleccionadosIds.contains(it.id)
-    }
-
-    val totalMonto = serviciosSeleccionados.sumOf { servicio ->
-        servicio.precio.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
-    }
-
-    val saludoTexto = if (nombreUsuario.isNotBlank()) "¡Hola, $nombreUsuario!" else "¡Hola!"
+    val saludoTexto = if (nombreUsuario.isNotBlank()) "¡Hola, $nombreUsuario" else "¡Hola!"
 
     Box(
         modifier = Modifier
@@ -170,8 +146,8 @@ fun Home_Catalogo(
             Spacer(modifier = Modifier.height(16.dp))
 
             Categorias(
-                categoriaSeleccionada = categoriaSeleccionada,
-                onCategoriaSelected = { categoriaSeleccionada = it }
+                categoriaSeleccionada = viewModel.categoriaSeleccionada,
+                onCategoriaSelected = { viewModel.onCategoriaSelected(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -180,44 +156,34 @@ fun Home_Catalogo(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(serviciosFiltrados) { servicio ->
-                    val estaSeleccionado = serviciosSeleccionadosIds.contains(servicio.id)
+                items(viewModel.serviciosFiltrados, key = { it.id }) { servicio ->
+                    val estaSeleccionado = viewModel.serviciosSeleccionadosIds.contains(servicio.id)
 
                     TarjetaServicio(
                         servicio = servicio,
                         isSelected = estaSeleccionado,
                         onAddClick = {
-                            serviciosSeleccionadosIds = if (estaSeleccionado) {
-                                serviciosSeleccionadosIds - servicio.id
-                            } else {
-                                serviciosSeleccionadosIds + servicio.id
-                            }
+                            viewModel.toggleSeleccionServicio(servicio.id)
                         }
                     )
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(if (serviciosSeleccionados.isNotEmpty()) 220.dp else 24.dp))
+                    Spacer(modifier = Modifier.height(if (viewModel.servicioSeleccionados.isNotEmpty()) 220.dp else 24.dp))
                 }
             }
         }
-            if (serviciosSeleccionados.isNotEmpty()) {
+            if (viewModel.servicioSeleccionados.isNotEmpty()) {
                 Carrito(
-                    serviciosSeleccionados = serviciosSeleccionados,
-                    totalMonto = totalMonto,
+                    serviciosSeleccionados = viewModel.servicioSeleccionados,
+                    totalMonto = viewModel.totalMonto,
                     onContinuarClick = { onNavigateToTurnos() },
-                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 65.dp)
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 65.dp)
                 )
             }
 
-            Nav(
-                rutaActual = "home",
-                onNavigateToHome = { },
-                onNavigateToTurnos = onNavigateToTurnos,
-                onNavigateToUbicacion = onNavigateToUbicacion,
-                onNavigateToPerfil = onNavigateToPerfil,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
     }
 }
 

@@ -1,70 +1,83 @@
 package com.example.barberia_app.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
+import com.example.barberia_app.components.Nav
+import com.example.barberia_app.screen.Home_Catalogo
 import com.example.barberia_app.screen.LoginScreen
 import com.example.barberia_app.screen.RegisterScreen
-import com.example.barberia_app.screen.Home_Catalogo
-
-
-sealed class Screen(val route: String){
-    object Login: Screen("login") //cada pantalla es un objeto unico que hereda de screen
-    object Register: Screen("register")
-    object Home: Screen("home")
-}
 
 @Composable
-fun AppNavigation(){
-    val navController = rememberNavController() //gestiona la pila de pantallas
-
-    //NavHost area donde se intercambian las pantallas dinamicamente
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Login.route //indica que pantalla debe mostrarse apenas abra la aplicacion
-    ){
-        composable(route = Screen.Login.route){
-            LoginScreen(
-                onLoginSucess = {
-                    navController.navigate(Screen.Home.route){
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
-                onRegisterClick = {
-                    navController.navigate(Screen.Register.route)
-                }
-            )
+fun AppNavigation() {
+    val backStack = remember { mutableStateListOf<BarberRoute>(BarberRoute.Login) }
+    val currentRoute = backStack.lastOrNull()
+    Box(modifier = Modifier.fillMaxSize()) {
+    NavDisplay(
+        backStack = backStack,
+        onBack = {
+            if (backStack.size > 1) {
+                backStack.removeAt(backStack.lastIndex)
+            }
         }
-
-        composable(route = Screen.Register.route){
-            RegisterScreen(
-                onRegisterSuccess = {
-                    navController.navigate(Screen.Home.route){
-                        popUpTo(Screen.Login.route) { inclusive = true }
+    ) { route ->
+        when (route) {
+            is BarberRoute.Login -> NavEntry<BarberRoute>(key = route) {
+                LoginScreen(
+                    onLoginSucess = {
+                        backStack.clear()
+                        backStack.add(BarberRoute.Home)
+                    },
+                    onRegisterClick = {
+                        backStack.add(BarberRoute.Register)
                     }
-                },
-                onLoginClick = {
-                    navController.popBackStack() //quita la pantalla actual de la cima de la pila, es el "retroceder"
-                },
-                onGoogleSignInClick = {
-                    //Integracion pendiente con Google
-                }
-            )
-        }
+                )
+            }
 
-        composable(route = Screen.Home.route) {
-            Home_Catalogo(
-                onNavigateToTurnos = {
-                   // navController.navigate(Screen.Turnos.route)
-                },
-                onNavigateToUbicacion = {
-                   // navController.navigate(Screen.Ubicacion.route)
-                },
-                onNavigateToPerfil = {
-                   // navController.navigate(Screen.Perfil.route)
-                }
-            )
+            is BarberRoute.Register -> NavEntry(key = route) {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        backStack.clear()
+                        backStack.add(BarberRoute.Home)
+                    },
+                    onLoginClick = {
+                        if (backStack.size > 1) {
+                            backStack.removeAt(backStack.lastIndex)
+                        }
+                    },
+                    onGoogleSignInClick = {
+                        //para inicar sesion con google
+                    }
+                )
+            }
+
+            is BarberRoute.Home -> NavEntry(key = route) {
+                Home_Catalogo(
+                    onNavigateToTurnos = { }
+                )
+            }
         }
     }
+
+    if (currentRoute !is BarberRoute.Login && currentRoute !is BarberRoute.Register) {
+        Nav(
+            rutaActual = "Home",
+            onNavigateToHome = {
+                if (currentRoute !is BarberRoute.Home) {
+                    backStack.add(BarberRoute.Home)
+                }
+            },
+            onNavigateToTurnos = { /* backStack.add(BarberRoute.Turnos) */ },
+            onNavigateToUbicacion = { /* backStack.add(BarberRoute.Ubicacion) */ },
+            onNavigateToPerfil = { /* backStack.add(BarberRoute.Perfil) */ },
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
 }
