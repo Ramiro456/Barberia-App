@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.barberia_app.ui.theme.goldPrimary
+import com.example.barberia_app.ui.theme.surfaceCardElevated
 import com.example.barberia_app.ui.theme.surfaseCard
 import com.example.barberia_app.ui.theme.textMuted
 
@@ -30,7 +31,7 @@ fun Nav(
 
     NavigationBar(
         modifier = modifier,
-        containerColor = surfaseCard,
+        containerColor = surfaceCardElevated,
         tonalElevation = 8.dp
     ) {
         NavigationBarItem(

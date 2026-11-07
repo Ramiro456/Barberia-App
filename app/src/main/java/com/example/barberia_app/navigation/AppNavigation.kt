@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,11 +14,19 @@ import com.example.barberia_app.components.Nav
 import com.example.barberia_app.screen.Home_Catalogo
 import com.example.barberia_app.screen.LoginScreen
 import com.example.barberia_app.screen.RegisterScreen
+import com.example.barberia_app.screen.ServicioModel
+import com.example.barberia_app.screen.TurnosScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AppNavigation() {
     val backStack = remember { mutableStateListOf<BarberRoute>(BarberRoute.Login) }
     val currentRoute = backStack.lastOrNull()
+
+    var serviciosSeleccionadosParaTurno by remember { mutableStateOf<List<ServicioModel>>(emptyList()) }
+    var totalMontoParaTurno by remember { mutableStateOf(0) }
+
     Box(modifier = Modifier.fillMaxSize()) {
     NavDisplay(
         backStack = backStack,
@@ -59,23 +68,49 @@ fun AppNavigation() {
 
             is BarberRoute.Home -> NavEntry(key = route) {
                 Home_Catalogo(
-                    onNavigateToTurnos = { }
+                    onNavigateToTurnos = { servicios, total ->
+                        serviciosSeleccionadosParaTurno = servicios
+                        totalMontoParaTurno = total
+                        backStack.add(BarberRoute.Turnos) }
+                )
+            }
+
+            is BarberRoute.Turnos -> NavEntry<BarberRoute>(key = route) {
+                TurnosScreen(
+                    servicioSeleccionados = serviciosSeleccionadosParaTurno,
+                    totalMonto = totalMontoParaTurno,
+                    onBackClick = {
+                        if (backStack.size > 1) {
+                            backStack.removeAt(backStack.lastIndex)
+                        }
+                    },
+                    onConfirmarClick = {
+                        serviciosSeleccionadosParaTurno = emptyList()
+                        totalMontoParaTurno = 0
+                        backStack.clear()
+                        backStack.add(BarberRoute.Home)
+                    }
                 )
             }
         }
     }
 
+
     if (currentRoute !is BarberRoute.Login && currentRoute !is BarberRoute.Register) {
         Nav(
-            rutaActual = "Home",
+            rutaActual = if (currentRoute is BarberRoute.Turnos) "turnos" else "home",
             onNavigateToHome = {
                 if (currentRoute !is BarberRoute.Home) {
                     backStack.add(BarberRoute.Home)
                 }
             },
-            onNavigateToTurnos = { /* backStack.add(BarberRoute.Turnos) */ },
-            onNavigateToUbicacion = { /* backStack.add(BarberRoute.Ubicacion) */ },
-            onNavigateToPerfil = { /* backStack.add(BarberRoute.Perfil) */ },
+            onNavigateToTurnos = {
+                if (currentRoute !is BarberRoute.Turnos) {
+                    backStack.add(BarberRoute.Turnos)
+                }
+            },
+            onNavigateToUbicacion = { },
+            onNavigateToPerfil = { },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

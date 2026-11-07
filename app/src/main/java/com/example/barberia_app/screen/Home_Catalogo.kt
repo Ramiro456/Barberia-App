@@ -64,7 +64,7 @@ fun Home_Catalogo(
     nombreUsuario: String = "Aldo",
     viewModel: HomeViewModel = viewModel(),
     onNotificationClick: () -> Unit = {},
-    onNavigateToTurnos: () -> Unit = {}
+    onNavigateToTurnos: (List<ServicioModel>, Int) -> Unit = { _, _ -> }
 ) {
     val saludoTexto = if (nombreUsuario.isNotBlank()) "¡Hola, $nombreUsuario" else "¡Hola!"
 
@@ -169,7 +169,7 @@ fun Home_Catalogo(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(if (viewModel.servicioSeleccionados.isNotEmpty()) 220.dp else 24.dp))
+                    Spacer(modifier = Modifier.height(if (viewModel.servicioSeleccionados.isNotEmpty()) 260.dp else 90.dp))
                 }
             }
         }
@@ -177,10 +177,10 @@ fun Home_Catalogo(
                 Carrito(
                     serviciosSeleccionados = viewModel.servicioSeleccionados,
                     totalMonto = viewModel.totalMonto,
-                    onContinuarClick = { onNavigateToTurnos() },
+                    onContinuarClick = { onNavigateToTurnos(viewModel.servicioSeleccionados, viewModel.totalMonto) },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 65.dp)
+                        .padding(bottom = 80.dp)
                 )
             }
 

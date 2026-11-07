@@ -11,4 +11,7 @@ sealed interface BarberRoute {
 
     @Serializable
     data object Home : BarberRoute
+
+    @Serializable
+    data object Turnos : BarberRoute
 }
