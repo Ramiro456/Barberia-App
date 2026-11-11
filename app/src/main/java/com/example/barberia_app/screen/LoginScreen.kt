@@ -56,6 +56,7 @@ import com.example.barberia_app.viewmodels.LoginViewModel
 fun LoginScreen(
     onLoginSucess: () -> Unit,
     onRegisterClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit = {},
     viewModel: LoginViewModel = viewModel() //instacia del ViewModel
 ){
     //Variables para guardar lo que el usuario escribe
@@ -196,7 +197,7 @@ fun LoginScreen(
                     color = goldPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable { onForgotPasswordClick()}
                 )
             }
 

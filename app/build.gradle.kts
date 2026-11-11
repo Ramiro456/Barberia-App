@@ -62,4 +62,7 @@ dependencies {
 
     // Serialización
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    //Ubicacion
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
